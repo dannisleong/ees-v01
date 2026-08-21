@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>EES V0.1 Pilot Readiness Review</title>
+<style>
+@page {
+    size: A4;
+    margin: 1.8cm;
+}
+body {
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    color: #222;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+h1 {
+    font-size: 22pt;
+    color: #0d1b2a;
+    border-bottom: 3px solid #1b263b;
+    padding-bottom: 10px;
+    margin-top: 0;
+    page-break-after: avoid;
+}
+h2 {
+    font-size: 14pt;
+    color: #1b263b;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-top: 28px;
+    page-break-after: avoid;
+}
+h3 {
+    font-size: 11.5pt;
+    color: #415a77;
+    margin-top: 20px;
+    page-break-after: avoid;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 14px 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+}
+th, td {
+    border: 1px solid #bbb;
+    padding: 6px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+th {
+    background: #1b263b;
+    color: white;
+    font-weight: 600;
+}
+tr:nth-child(even) {
+    background: #f5f7fa;
+}
+code {
+    background: #eef1f5;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-family: "Consolas", "Monaco", monospace;
+    font-size: 9pt;
+    color: #c0392b;
+}
+pre {
+    background: #f4f6f8;
+    padding: 12px;
+    border-radius: 4px;
+    overflow-x: auto;
+    border-left: 3px solid #1b263b;
+    page-break-inside: avoid;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #222;
+}
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 24px 0;
+}
+blockquote {
+    border-left: 4px solid #1b263b;
+    margin: 12px 0;
+    padding: 10px 18px;
+    background: #f8f9fb;
+    color: #444;
+}
+ul, ol {
+    margin: 8px 0;
+    padding-left: 26px;
+}
+li {
+    margin: 4px 0;
+}
+p {
+    margin: 8px 0;
+}
+a {
+    color: #1b263b;
+    text-decoration: none;
+}
+.print-hint {
+    display: none;
+}
+@media screen {
+    .print-hint {
+        display: block;
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        padding: 12px 16px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-size: 10pt;
+    }
+    body {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+}
+</style>
+</head>
+<body>
+<div class="print-hint">
+    <strong>💡 To save as PDF:</strong> Press <kbd>Ctrl+P</kbd> (or <kbd>Cmd+P</kbd> on Mac), then choose <strong>"Save as PDF"</strong> as the destination. For best results, use Chrome or Edge.
+</div>
+<h1>EES V0.1 — Pilot Readiness Review</h1>
+<p><strong>Date:</strong> 2026-08-16<br />
+<strong>System:</strong> EES Enterprise Execution System V0.1 Alpha<br />
+<strong>Status:</strong> CORE FROZEN — All 113 automated tests PASS  </p>
+<hr />
+<h2>1. Executive Summary</h2>
+<p>The EES V0.1 Core Control layer is complete, tested, and frozen. Seven modules have been implemented with automated test coverage. All 113 tests pass with zero failures. The architecture preserves business-rule integrity through PostgreSQL triggers, strict RBAC/DAC enforcement, and a Management Attention Dashboard that answers the question: <strong>"What needs my attention today?"</strong></p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Tests</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deposit SSOT</td>
+<td>8/8</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Smart Gate Engine</td>
+<td>13/13</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Quality Audit Engine</td>
+<td>13/13</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Document Access Control</td>
+<td>19/19</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>BOM Management</td>
+<td>26/26</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>ETA Tracking</td>
+<td>15/15</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td>19/19</td>
+<td>✅ PASS</td>
+</tr>
+<tr>
+<td><strong>TOTAL</strong></td>
+<td><strong>113/113</strong></td>
+<td><strong>✅ PASS</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>2. Architecture Overview</h2>
+<h3>2.1 Tech Stack</h3>
+<ul>
+<li><strong>Frontend:</strong> React 19 + TypeScript + Tailwind CSS + shadcn/ui</li>
+<li><strong>Backend:</strong> Express 5 + TypeScript</li>
+<li><strong>Database:</strong> PostgreSQL 16 + Prisma ORM 7.9</li>
+<li><strong>Auth:</strong> JWT with bcrypt-hashed passwords</li>
+<li><strong>Test Runner:</strong> Custom assertion framework via <code>npx tsx</code></li>
+</ul>
+<h3>2.2 Database Schema (Prisma)</h3>
+<pre><code>users ── roles ── role_permissions ── permissions
+  │
+  ├── projects ── customers
+  │     ├── project_stages
+  │     ├── gate_results ── gates ── gate_conditions
+  │     ├── gate_overrides
+  │     ├── issues ── corrective_actions
+  │     ├── quality_audits ── audit_items
+  │     ├── bom_items ── suppliers
+  │     ├── risks
+  │     ├── documents
+  │     ├── landed_costs
+  │     ├── project_partners ── partners
+  │     ├── qualifications ── qualification_types
+  │     ├── eta_tracking
+  │     ├── customer_orders ── customer_deposits  ← SSOT trigger
+  │     └── customer_variations
+  │
+  ├── audit_logs  ← all mutations logged
+  └── lessons_learned
+</code></pre>
+<h3>2.3 Gate 01–06 Numbering &amp; BOM Integration Mapping (Authoritative)</h3>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Stage</th>
+<th>Name (EN / ZH)</th>
+<th>BOM Integration</th>
+<th>Key Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>01</strong></td>
+<td>2</td>
+<td>Proposal GO / NO-GO / 方案关卡</td>
+<td>—</td>
+<td><code>measurement_record</code> uploaded</td>
+</tr>
+<tr>
+<td><strong>02</strong></td>
+<td>4</td>
+<td>Commercial GO / NO-GO / 商务关卡</td>
+<td>—</td>
+<td>Deposit SSOT → <code>deposit_received</code> or <code>fully_paid</code></td>
+</tr>
+<tr>
+<td><strong>03</strong></td>
+<td>5</td>
+<td>Procurement GO / NO-GO / 采购关卡</td>
+<td><strong>✅ BOM approval gate</strong></td>
+<td><code>bom_approved</code> = true</td>
+</tr>
+<tr>
+<td><strong>04</strong></td>
+<td>6</td>
+<td>Production / QC GO / NO-GO / 生产质检关卡</td>
+<td>BOM items in production</td>
+<td><code>qc_passed</code> + <code>qc_report</code> uploaded</td>
+</tr>
+<tr>
+<td><strong>05</strong></td>
+<td>8</td>
+<td>Installation GO / NO-GO / 安装关卡</td>
+<td>—</td>
+<td>Partner compliance valid + <code>installation_photos</code></td>
+</tr>
+<tr>
+<td><strong>06</strong></td>
+<td>9</td>
+<td>Handover GO / NO-GO / 移交关卡</td>
+<td>—</td>
+<td><code>final_audit</code> + customer acceptance + lessons recorded</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>BOM Integration Point:</strong> Gate 03 is the procurement gate. BOM must be submitted and approved (Dongmei/Founder) before Gate 03 can evaluate GO. This is enforced by the <code>bom_approved</code> gate condition in <code>gate_conditions</code> (migration <code>20250816000001_smart_gate_conditions</code>).</p>
+</blockquote>
+<h3>2.4 Single Sources of Truth (SSOT)</h3>
+<table>
+<thead>
+<tr>
+<th>Domain</th>
+<th>SSOT Table</th>
+<th>Enforcement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Customer deposits</td>
+<td><code>customer_deposits</code></td>
+<td>PostgreSQL trigger recalculates <code>payment_status</code> on INSERT/UPDATE/DELETE</td>
+</tr>
+<tr>
+<td>ETA (current)</td>
+<td><code>bom_items</code></td>
+<td><code>eta_tracking</code> stores history only; current ETA lives on BOM item</td>
+</tr>
+<tr>
+<td>BOM cost</td>
+<td><code>bom_items</code></td>
+<td><code>total_cost = quantity × unit_cost</code> computed at application layer</td>
+</tr>
+<tr>
+<td>Margin</td>
+<td><code>landed_costs.is_current = true</code></td>
+<td>Latest version flagged; historical versions retained</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Module-by-Module Validation</h2>
+<h3>3.1 Deposit SSOT (8/8 PASS)</h3>
+<ul>
+<li><strong>Rule:</strong> <code>customer_deposits</code> is the sole source of deposit truth</li>
+<li><strong>Trigger:</strong> Handles INSERT → recalculate, UPDATE (old+new order) → recalculate both, DELETE → rollback</li>
+<li><strong>Statuses (complete four-state ladder):</strong> <code>pending_deposit</code> → <code>partial_deposit</code> → <code>deposit_received</code> → <code>fully_paid</code></li>
+<li><strong>Tests cover:</strong> Deposit received, partial deposit, fully paid, deletion/rollback, deposit moved between orders</li>
+<li><strong>Migration:</strong> <code>20250816000000_deposit_ssot_trigger/migration.sql</code></li>
+<li><strong>Trigger comment:</strong> <code>&gt;= order_amount → fully_paid; &gt;= deposit_required → deposit_received; &gt; 0 → partial_deposit; else → pending_deposit</code></li>
+</ul>
+<h3>3.2 Smart Gate Engine (13/13 PASS)</h3>
+<ul>
+<li><strong>Flow:</strong> Gate 01 (Proposal) → Gate 02 (Commercial/Deposit) → Gate 03 (Procurement/BOM) → Gate 04 (Production/QC) → Gate 05 (Installation) → Gate 06 (Handover)</li>
+<li><strong>Override:</strong> Requires <code>reason</code>, <code>risk_acceptance</code>, <code>approver_name</code>; logged as exceptional</li>
+<li><strong>Unauthorized override:</strong> BLOCKED with 403</li>
+<li><strong>Gate advancement:</strong> Automatic on checklist pass</li>
+</ul>
+<h3>3.3 Quality Audit Engine (13/13 PASS)</h3>
+<ul>
+<li><strong>Strict checklist:</strong> All critical items must pass; non-critical can have defined tolerances</li>
+<li><strong>Result states:</strong> <code>pending</code> → <code>in_progress</code> → <code>pass</code> / <code>fail</code></li>
+<li><strong>Audit trail:</strong> Every checklist result logged with before/after values</li>
+</ul>
+<h3>3.4 Document Access Control (19/19 PASS)</h3>
+<ul>
+<li><strong>Model:</strong> Role-Based + Document-Type scoped</li>
+<li><strong>Permission matrix per role:</strong></li>
+<li>Founder: full read/write/delete across all document types</li>
+<li>Dongmei: full read/write on BOM, supplier, QC docs</li>
+<li>PM: read on most; limited write on project docs</li>
+<li>Cammy: read on customer-facing docs</li>
+<li>Supplier: read-only on their own category</li>
+<li>Quality Reviewer: read/write on QC docs only</li>
+<li><strong>Negative tests:</strong> Unauthorized uploads, deletions, and cross-role access all blocked</li>
+</ul>
+<h3>3.5 BOM Management (26/26 PASS)</h3>
+<ul>
+<li><strong>Lifecycle:</strong> <code>draft</code> → <code>submitted</code> → <code>approved</code> (Dongmei/Founder only) / <code>rejected</code></li>
+<li><strong>Validation:</strong> item_code, product_name required; quantity &gt; 0 integer; unit_cost ≥ 0</li>
+<li><strong>Post-approval:</strong> Modifications blocked (Founder-only override for deletion)</li>
+<li><strong>Audit log:</strong> Created on every create, update, approve, reject</li>
+</ul>
+<h3>3.6 ETA Tracking (15/15 PASS)</h3>
+<ul>
+<li><strong>Write roles:</strong> Dongmei (full), Founder (override/emergency)</li>
+<li><strong>PM role:</strong> Read-only (can view ETA but cannot modify)</li>
+<li><strong>Auto-alerts:</strong> Critical item delay → alert triggered → Risk auto-created</li>
+<li><strong>Variance calculation:</strong> <code>(actual_arrival − planned_eta)</code> in days</li>
+<li><strong>History:</strong> <code>eta_tracking</code> table captures every change with before/after audit log</li>
+</ul>
+<h3>3.7 Dashboard — Management Attention Layer (19/19 PASS)</h3>
+<ul>
+<li><strong>Data source:</strong> Live queries across all tables — no mock data</li>
+<li><strong>Alert categories (8):</strong> NO-GO gates, critical risks, BOM delays, overdue actions, QC failures, compliance issues, cost variance, upcoming deadlines</li>
+<li><strong>Priority sorting:</strong> Critical → High → Medium → Low</li>
+<li><strong>RBAC filtering:</strong> Founder/Dongmei see all; PM/Cammy see assigned projects only</li>
+<li><strong>KPI bar:</strong> Active projects, at-risk count, BOM approved/total, delayed items, avg margin %, open issues</li>
+<li><strong>Drill-down:</strong> Project-level summary with gate status, BOM status, ETA, risks, cost, partners</li>
+</ul>
+<hr />
+<h2>4. Role-Based Access Control Matrix</h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Founder</th>
+<th>Dongmei</th>
+<th>PM</th>
+<th>Cammy</th>
+<th>Supplier</th>
+<th>Quality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Projects</strong></td>
+<td>CRUD</td>
+<td>CRUD</td>
+<td>RU (assigned)</td>
+<td>R (assigned)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Gates</strong></td>
+<td>CRUD + Override</td>
+<td>R + Evaluate</td>
+<td>R</td>
+<td>R</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>BOM</strong></td>
+<td>CRUD</td>
+<td>CRUD</td>
+<td>R (assigned)</td>
+<td>R</td>
+<td>R (own)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>BOM Approve</strong></td>
+<td>Approve</td>
+<td>Approve</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>ETA Read</strong></td>
+<td>R</td>
+<td>R</td>
+<td>R</td>
+<td>R</td>
+<td>R (own)</td>
+<td>R</td>
+</tr>
+<tr>
+<td><strong>ETA Write</strong></td>
+<td>Override</td>
+<td>Full</td>
+<td><strong>Read-only</strong></td>
+<td>—</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Quality Audit</strong></td>
+<td>CRUD</td>
+<td>CRUD</td>
+<td>R</td>
+<td>R</td>
+<td>—</td>
+<td>CRUD</td>
+</tr>
+<tr>
+<td><strong>Documents</strong></td>
+<td>Full</td>
+<td>Full</td>
+<td>Limited</td>
+<td>Limited</td>
+<td>Own-type</td>
+<td>QC-only</td>
+</tr>
+<tr>
+<td><strong>Dashboard</strong></td>
+<td>Full KPI</td>
+<td>Full KPI</td>
+<td>Filtered</td>
+<td>Filtered</td>
+<td>Minimal</td>
+<td>Minimal</td>
+</tr>
+<tr>
+<td><strong>Partners</strong></td>
+<td>CRUD</td>
+<td>CRUD</td>
+<td>R</td>
+<td>R</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Qualifications</strong></td>
+<td>CRUD</td>
+<td>CRUD</td>
+<td>R</td>
+<td>R</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Legend:</strong> C=Create, R=Read, U=Update, D=Delete</p>
+</blockquote>
+<hr />
+<h2>5. Pilot Readiness Checklist</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Item</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>PostgreSQL database installed and reachable</td>
+<td>✅ <code>localhost:5432/ees_v01</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td>All Prisma migrations applied</td>
+<td>✅ <code>npx prisma migrate deploy</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Deposit SSOT trigger active</td>
+<td>✅ Verified by 8 tests</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Smart Gate evaluation logic tested</td>
+<td>✅ 13 tests</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Quality Audit strict checklist enforced</td>
+<td>✅ 13 tests</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Document Access Control (RBAC/DAC) enforced</td>
+<td>✅ 19 tests</td>
+</tr>
+<tr>
+<td>7</td>
+<td>BOM Management with approval workflow</td>
+<td>✅ 26 tests</td>
+</tr>
+<tr>
+<td>8</td>
+<td>ETA Tracking with PM read-only</td>
+<td>✅ 15 tests</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Dashboard with real data aggregation</td>
+<td>✅ 19 tests</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Full regression suite passes</td>
+<td>✅ <strong>113/113 PASS</strong></td>
+</tr>
+<tr>
+<td>11</td>
+<td>Audit logging on all mutations</td>
+<td>✅ Confirmed</td>
+</tr>
+<tr>
+<td>12</td>
+<td>RBAC enforced at API + service layers</td>
+<td>✅ Confirmed</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Gate 01–06 numbering authoritative + BOM integration documented</td>
+<td>✅ Confirmed (§2.3)</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Deposit SSOT <code>fully_paid</code> documented in trigger + review</td>
+<td>✅ Confirmed (§3.1)</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Singapore Local Partner Execution scenario defined</td>
+<td>✅ Confirmed (§6.4)</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Customer Variation SOP prepared for PRJ-2026-001</td>
+<td>✅ See <code>SOP_Customer_Variation_PRJ-2026-001.md</code></td>
+</tr>
+<tr>
+<td>17</td>
+<td>English / Simplified Chinese i18n status confirmed</td>
+<td>✅ PARTIAL (§7.1)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6. Recommended Pilot Scenarios</h2>
+<h3>Scenario A: PRJ-2026-001 — Dongmei Home (Full Walkthrough)</h3>
+<ol>
+<li>Create project, assign Dongmei as owner, PM as manager</li>
+<li>Pass Gate 01 (Proposal Confirmed)</li>
+<li>Record customer deposit → verify SSOT trigger updates payment status</li>
+<li>Pass Gate 02 (Deposit Received / Fully Paid)</li>
+<li>Create BOM items → submit → Dongmei approves</li>
+<li>Record supplier ETA → verify PM can read but not modify</li>
+<li>Introduce critical BOM delay → verify Dashboard surfaces alert + auto-creates Risk</li>
+<li>Run Quality Audit → verify strict checklist</li>
+<li>Verify Dashboard shows: NO-GO (if any), risks, BOM delays, cost variance</li>
+</ol>
+<h3>Scenario B: Unauthorized Override Attempt (Security Validation)</h3>
+<ol>
+<li>PM attempts to override a NO-GO gate → verify 403 blocked</li>
+<li>PM attempts to update ETA → verify 403 blocked</li>
+<li>PM attempts to approve BOM → verify 403 blocked</li>
+<li>Supplier attempts to read another supplier's documents → verify 403 blocked</li>
+</ol>
+<h3>Scenario C: Multi-User Dashboard Visibility</h3>
+<ol>
+<li>Founder logs in → sees all active project alerts</li>
+<li>PM logs in → sees only assigned project alerts</li>
+<li>Cammy logs in → sees only assigned project alerts</li>
+<li>Supplier logs in → sees zero attention items</li>
+</ol>
+<h3>Scenario D: Singapore Local Partner Execution (Gates 04–06)</h3>
+<ol>
+<li><strong>Qualification:</strong> Register Singapore local partner in <code>partners</code>; create <code>qualifications</code> (licence, insurance, HDB-authority); verify role-specific qualification types</li>
+<li><strong>Assignment:</strong> Link partner to PRJ-2026-001 via <code>project_partners</code> with role = <code>installation</code>; verify compliance valid before Gate 05</li>
+<li><strong>Installation:</strong> Partner executes on-site installation; upload <code>installation_photos</code> document; record <code>installation_time_recorded</code></li>
+<li><strong>Inspection:</strong> Run Gate 05 evaluation → must pass <code>compliance_valid</code> + <code>installation_photos</code> + <code>installation_time_recorded</code></li>
+<li><strong>Handover:</strong> Record <code>final_audit</code>, customer acceptance, <code>lessons_recorded</code>, warranty; pass Gate 06</li>
+</ol>
+<hr />
+<h2>7. Known Limitations &amp; i18n Status</h2>
+<h3>7.1 Internationalisation (English / 简体中文) — Status: PARTIAL</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Status</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>i18n infrastructure</td>
+<td>✅ PASS</td>
+<td><code>i18next</code> + <code>react-i18next</code> + <code>LanguageDetector</code> wired in <code>src/i18n/index.ts</code></td>
+</tr>
+<tr>
+<td>Translation files</td>
+<td>✅ PASS</td>
+<td><code>en.json</code> and <code>zh-CN.json</code> present with matching key coverage (~77 keys)</td>
+</tr>
+<tr>
+<td>Translation completeness</td>
+<td>✅ PASS</td>
+<td>Core namespaces covered: app, nav, auth, dashboard, projects, gate, audit, common</td>
+</tr>
+<tr>
+<td>Component extraction</td>
+<td>⚠️ PARTIAL</td>
+<td><code>Dashboard.tsx</code>, <code>BomManagement.tsx</code>, <code>EtaTracking.tsx</code> contain hardcoded English labels (KPI labels, tab names, empty-state messages, alert category labels). These are <strong>not</strong> yet using <code>t()</code> keys.</td>
+</tr>
+<tr>
+<td><strong>Overall i18n rating</strong></td>
+<td><strong>PARTIAL</strong></td>
+<td>Framework ready; component-level extraction required before full bilingual operation. V0.2 scope.</td>
+</tr>
+</tbody>
+</table>
+<h3>7.2 Out of Scope for V0.1</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Status</th>
+<th>Planned For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Supplier rating / scoring UI</td>
+<td>Not built</td>
+<td>V0.2</td>
+</tr>
+<tr>
+<td>Shipment tracking integration</td>
+<td>Not built</td>
+<td>V0.2</td>
+</tr>
+<tr>
+<td>Customer variation approval workflow UI</td>
+<td>Schema exists, no UI</td>
+<td>V0.2</td>
+</tr>
+<tr>
+<td>Multi-currency support</td>
+<td>Not built</td>
+<td>V0.2</td>
+</tr>
+<tr>
+<td>Email / notification system</td>
+<td>Not built</td>
+<td>V0.2</td>
+</tr>
+<tr>
+<td>Mobile-responsive optimization</td>
+<td>Partial</td>
+<td>V0.2</td>
+</tr>
+<tr>
+<td>SOP / lessons-learned module UI</td>
+<td>Schema exists, no UI</td>
+<td>V0.2</td>
+</tr>
+<tr>
+<td>Integration with external ERP/accounting</td>
+<td>Not built</td>
+<td>V0.3</td>
+</tr>
+<tr>
+<td>Full component i18n extraction</td>
+<td>PARTIAL</td>
+<td>V0.2</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>8. Handover Notes</h2>
+<h3>How to run the system</h3>
+<pre><code class="language-bash"># 1. Start PostgreSQL (must be running on localhost:5432)
+# 2. Apply migrations (if not already done)
+npx prisma migrate deploy
+
+# 3. Start API server
+npm run api:dev
+
+# 4. Start React dev server
+npm run dev
+</code></pre>
+<h3>How to run tests</h3>
+<pre><code class="language-bash">npm run test:deposit-ssot   # 8 tests
+npm run test:smart-gate     # 13 tests
+npm run test:quality-audit  # 13 tests
+npm run test:document-access # 19 tests
+npm run test:bom            # 26 tests
+npm run test:eta            # 15 tests
+npm run test:dashboard      # 19 tests
+</code></pre>
+<h3>Critical business rules frozen in V0.1</h3>
+<ol>
+<li>Deposit = single source of truth (PostgreSQL trigger)</li>
+<li>BOM approval: Dongmei/Founder only</li>
+<li>ETA update: Dongmei full, Founder override, PM read-only</li>
+<li>Gate override: requires justification + approver name, always exceptional</li>
+<li>Approved BOM cannot be modified (Founder deletion only)</li>
+<li>Critical BOM delay auto-creates Risk entry</li>
+<li>All mutations write to audit_logs with before/after values</li>
+<li>Gate 03 is the BOM integration point (<code>bom_approved</code> condition)</li>
+<li><code>fully_paid</code> is a valid Deposit SSOT state (not just <code>deposit_received</code>)</li>
+</ol>
+<hr />
+<h2>9. Sign-Off</h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Module Ownership</th>
+<th>Validation Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core Control (Deposit, Gate, Audit, DAC)</td>
+<td>53 tests</td>
+<td>✅ FROZEN</td>
+</tr>
+<tr>
+<td>BOM Management</td>
+<td>26 tests</td>
+<td>✅ FROZEN</td>
+</tr>
+<tr>
+<td>ETA Tracking</td>
+<td>15 tests</td>
+<td>✅ FROZEN</td>
+</tr>
+<tr>
+<td>Dashboard</td>
+<td>19 tests</td>
+<td>✅ FROZEN</td>
+</tr>
+<tr>
+<td><strong>EES V0.1 TOTAL</strong></td>
+<td><strong>113 tests</strong></td>
+<td><strong>✅ PILOT READY</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>10. Pre-Pilot Sign-Off Confirmation — Five Items Closed</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Confirmation Item</th>
+<th>Evidence</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Gate 01–06 numbering authoritative + BOM integration</strong></td>
+<td>§2.3 mapping table; migration <code>20250816000001_smart_gate_conditions</code> seeds <code>bom_approved</code> at Gate 03</td>
+<td>✅ CLOSED</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Deposit SSOT includes <code>fully_paid</code></strong></td>
+<td>Trigger SQL: <code>CASE WHEN v_total_deposits &gt;= v_order_amount THEN 'fully_paid'</code>; Test 4 verifies; §3.1 documents</td>
+<td>✅ CLOSED</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Singapore Local Partner Execution scenario</strong></td>
+<td>§6.4 Scenario D: qualification → assignment → installation → inspection → handover using <code>partners</code>, <code>qualifications</code>, <code>project_partners</code>, Gates 04–06</td>
+<td>✅ CLOSED</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Customer Variation SOP for PRJ-2026-001</strong></td>
+<td>See companion document <code>SOP_Customer_Variation_PRJ-2026-001.md</code></td>
+<td>✅ CLOSED</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>i18n EN/ZH status explicit</strong></td>
+<td>§7.1: Infrastructure PASS, Translation files PASS, Component extraction PARTIAL</td>
+<td>✅ CLOSED</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Architecture frozen. No new major modules. No redesign.</strong></p>
+</blockquote>
+<hr />
+<p><em>Report generated by EES V0.1 automated validation pipeline.</em><br />
+<em>All claims backed by executable tests in <code>api/src/tests/</code>.</em></p>
+</body>
+</html>

@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+*.local
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production
+
+# Database data
+embedded-pg-data/
+pglite-data/
+*.db
+*.db-journal
+
+# Logs
+*.log
+logs/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+coverage/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Kimi/AI generated temp files
+check-*.py
+verify-*.cjs
+test-*.py
+test-*.cjs
+test-*.ts
+start-*.py
+start-*.mjs
+fix_*.py
+update_*.py
+scan_*.py
